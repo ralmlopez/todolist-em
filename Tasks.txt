@@ -1,0 +1,9 @@
+Buy eggs,False,8/17/2023 3:39:55 PM
+Go running,False,8/17/2023 3:40:10 PM
+Go running,True,8/17/2023 3:40:17 PM
+Practice piano,False,8/17/2023 4:33:53 PM
+Exercise,False,8/17/2023 4:34:14 PM
+Practice piano,True,8/17/2023 4:34:43 PM
+Exercise,True,8/17/2023 4:37:01 PM
+Walk dog,False,8/17/2023 4:40:08 PM
+Take medicine,False,8/17/2023 4:50:16 PM
