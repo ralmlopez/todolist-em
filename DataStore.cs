@@ -23,7 +23,6 @@ public class DataStore
     {
         var record = $"{id},{task},{eventType},{DateTime.Now}";
         File.AppendAllLines(fileName, new[] { record });
-        nextId++;
     }
 
     public IEnumerable<Event> GetAllEvents()
