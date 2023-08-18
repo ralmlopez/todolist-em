@@ -9,7 +9,7 @@ public class DataStore
     {
         this.fileName = fileName;
         var events = GetAllEvents().ToList();
-        nextId = events.Count == 0 ? 1 : events.Max(e => e.Id);
+        nextId = events.Count == 0 ? 1 : events.Max(e => e.Id) + 1;
     }
 
     public void AppendEvent(string task, string eventType)

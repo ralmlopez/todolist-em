@@ -22,4 +22,12 @@ public class Commands
 
         dataStore.AppendEvent(id, task, EventType.TaskCompleted);
     }
+
+    public static void RemoveTask(DataStore dataStore, int id)
+    {
+        var task = Projections.GetTasksNotRemoved(dataStore, id);
+        if (task == null) return;
+
+        dataStore.AppendEvent(id, task, EventType.TaskRemoved);
+    }
 }

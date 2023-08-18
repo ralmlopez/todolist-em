@@ -7,6 +7,7 @@ public class UI
         Console.WriteLine("1. Create Task");
         Console.WriteLine("2. Update Task");
         Console.WriteLine("3. Complete Task");
+        Console.WriteLine("4. Remove Task");
         Console.WriteLine("q. Quit");
         Console.WriteLine();
         Console.Write("Enter choice: ");
@@ -57,9 +58,16 @@ public class UI
         return (id, newTaskName);
     }
 
-    public static int GetCompletedTaskId()
+    public static int GetTaskIdToComplete()
     {
-        Console.Write("Enter completed task id: ");
+        Console.Write("Enter task id to complete: ");
+        var input = Console.ReadLine() ?? string.Empty;
+        return int.Parse(input == string.Empty ? "0" : input);
+    }
+
+    public static int GetTaskIdToRemove()
+    {
+        Console.Write("Enter task id to remove: ");
         var input = Console.ReadLine() ?? string.Empty;
         return int.Parse(input == string.Empty ? "0" : input);
     }

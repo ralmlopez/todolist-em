@@ -26,4 +26,5 @@ public class EventType
     public const string TaskCreated = "TaskCreated";
     public const string TaskUpdated = "TaskUpdated";
     public const string TaskCompleted = "TaskCompleted";
+    public const string TaskRemoved = "TaskRemoved";
 }

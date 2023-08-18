@@ -35,7 +35,11 @@ static bool ProcessInput(DataStore dataStore)
             break;
 
         case "3":
-            Commands.CompleteTask(dataStore, UI.GetCompletedTaskId());
+            Commands.CompleteTask(dataStore, UI.GetTaskIdToComplete());
+            break;
+
+        case "4":
+            Commands.RemoveTask(dataStore, UI.GetTaskIdToRemove());
             break;
 
         case "q":
