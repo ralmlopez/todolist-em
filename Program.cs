@@ -114,8 +114,7 @@ static IEnumerable<string> GetTasksCompleted()
         .ReadLines(FileName)
         .Select(line => line.Split(','))
         .Where(items => items[1] == EventType.TaskCompleted)
-        .Select(items => items[0])
-        .ToList();
+        .Select(items => items[0]);
 }
 
 static class EventType
