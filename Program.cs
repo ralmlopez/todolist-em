@@ -33,7 +33,7 @@ static (bool, string) ProcessInput(DataStore dataStore, IEnumerable<TaskEvent> a
     switch (choice)
     {
         case "1":
-            var (createdEvent, error) = Commands.CreateTask(UI.GetTaskName());
+            var (createdEvent, error) = Commands.CreateTask(UI.GetTaskName(), allTasks);
             if (!string.IsNullOrEmpty(error))
             {
                 message = error;
