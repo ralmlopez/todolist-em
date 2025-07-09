@@ -33,7 +33,7 @@ static (bool, string) ProcessInput(DataStore dataStore, IEnumerable<TaskEvent> a
     switch (choice)
     {
         case "1":
-            var (createdEvent, error) = Commands.CreateTask(UI.GetTaskName(), allTasks);
+            var (createdEvent, error) = new CreateTaskCommand().Execute(UI.GetTaskName(), allTasks);
             if (!string.IsNullOrEmpty(error))
             {
                 message = error;
@@ -46,19 +46,19 @@ static (bool, string) ProcessInput(DataStore dataStore, IEnumerable<TaskEvent> a
 
         case "2":
             var updateInfo = UI.GetIdAndNewTaskName(allTasks);
-            var updatedEvent = Commands.UpdateTask(updateInfo.Item1, updateInfo.Item2);
+            var updatedEvent = new UpdateTaskCommand().Execute(updateInfo.Item1, updateInfo.Item2);
             dataStore.AppendEvent(updatedEvent);
             break;
 
         case "3":
             var completeInfo = UI.GetTaskIdToComplete(allTasks);
-            var completedEvent = Commands.CompleteTask(completeInfo.Item1, completeInfo.Item2);
+            var completedEvent = new CompleteTaskCommand().Execute(completeInfo.Item1, completeInfo.Item2);
             dataStore.AppendEvent(completedEvent);
             break;
 
         case "4":
-            var removeInfo = UI.GetTaskIdToComplete(allTasks);
-            var removedEvent = Commands.RemoveTask(removeInfo.Item1, removeInfo.Item2);
+            var removeInfo = UI.GetTaskIdToRemove(allTasks);
+            var removedEvent = new RemoveTaskCommand().Execute(removeInfo.Item1, removeInfo.Item2);
             dataStore.AppendEvent(removedEvent);
             break;
 
