@@ -36,16 +36,17 @@ public class UI
         Console.WriteLine(string.Format(headerFormat, "TASKS", "DONE"));
         Console.WriteLine($" {listHorizontalBorder}{blankSpaces}  {listHorizontalBorder}");
 
-        var todo = TaskList(allTasks)
+        var taskList = TaskList(allTasks)
             .Select(x => $"{x.RowNumber} | {x.Id} | {x.Task}").ToList();
-        var completed = TaskCompletedList(allTasks)
+
+        var taskCompletedList = TaskCompletedList(allTasks)
             .Select(x => $"{x.Id} | {x.Task}").ToList();
 
-        int maxCount = Math.Max(todo.Count, completed.Count);
+        int maxCount = Math.Max(taskList.Count, taskCompletedList.Count);
         for (int i = 0; i < maxCount; i++)
         {
-            var taskDone = i < todo.Count ? todo[i] : string.Empty;
-            var taskNotDone = i < completed.Count ? completed[i] : string.Empty;
+            var taskDone = i < taskList.Count ? taskList[i] : string.Empty;
+            var taskNotDone = i < taskCompletedList.Count ? taskCompletedList[i] : string.Empty;
             Console.WriteLine($"|{FormatForDisplay(taskDone)}|{blankSpaces}|{FormatForDisplay(taskNotDone)}|");
         }
 

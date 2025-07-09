@@ -6,7 +6,7 @@ Run();
 
 static void Run()
 {
-    Console.BackgroundColor = ConsoleColor.DarkBlue;
+    Console.BackgroundColor = ConsoleColor.DarkGreen;
     var quit = false;
     var message = string.Empty;
     var dataStore = new DataStore(FileName);
