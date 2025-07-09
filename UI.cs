@@ -24,7 +24,7 @@ public class UI
         Console.WriteLine();
     }
 
-    public static void ShowTasks(DataStore dataStore)
+    public static void ShowTasks(IEnumerable<TaskEvent> allTasks)
     {
         const int spaces = 10;
         const int listWidth = 60;
@@ -36,9 +36,9 @@ public class UI
         Console.WriteLine(string.Format(headerFormat, "TASKS", "DONE"));
         Console.WriteLine($" {listHorizontalBorder}{blankSpaces}  {listHorizontalBorder}");
 
-        var todo = Projections.GetTasksPending(dataStore)
+        var todo = TaskList(allTasks)
             .Select(x => $"{x.RowNumber} | {x.Id} | {x.Task}").ToList();
-        var completed = Projections.GetTasksCompleted(dataStore)
+        var completed = TaskCompletedList(allTasks)
             .Select(x => $"{x.Id} | {x.Task}").ToList();
 
         int maxCount = Math.Max(todo.Count, completed.Count);
@@ -53,17 +53,41 @@ public class UI
         Console.WriteLine();
     }
 
+
+    public static IEnumerable<PendingTask> TaskList(IEnumerable<TaskEvent> allTasks)
+    {
+        var exclusions = new HashSet<Guid>(allTasks.Where(x => x.EventType == EventType.TaskCompleted
+                    || x.EventType == EventType.TaskRemoved).Select(x => x.Id));
+
+        return allTasks
+            .Where(x => (x.EventType == EventType.TaskCreated || x.EventType == EventType.TaskUpdated)
+                    && !exclusions.Contains(x.Id))
+            .GroupBy(x => x.Id)
+            .Select(g => g.OrderBy(c => c.Id).ThenByDescending(c => c.Created).First())
+            .Select((x, index) => new PendingTask { RowNumber= index + 1, Id = x.Id, Task = x.Task});
+    }
+
+    public static IEnumerable<CompletedTask> TaskCompletedList(IEnumerable<TaskEvent> allTasks)
+    {
+        var exclude = new HashSet<Guid>(allTasks.Where(x => x.EventType == EventType.TaskRemoved).Select(x => x.Id));
+
+        return allTasks
+            .Where(task => task.EventType == EventType.TaskCompleted
+                    && !exclude.Contains(task.Id))
+            .Select(x => new CompletedTask { Id = x.Id, Task = x.Task});
+    }
+
     public static string GetTaskName()
     {
         Console.Write("Enter task name: ");
         return Console.ReadLine() ?? string.Empty;
     }
 
-    public static (Guid, string) GetIdAndNewTaskName(DataStore dataStore)
+    public static (Guid, string) GetIdAndNewTaskName(IEnumerable<TaskEvent> allTasks)
     {
         Console.Write("Enter task id to update: ");
         var input = Console.ReadLine() ?? string.Empty;
-        var id = Projections.GetTasksPending(dataStore).First(x => x.RowNumber == int.Parse(input)).Id;
+        var id = TaskList(allTasks).First(x => x.RowNumber == int.Parse(input)).Id;
 
         Console.Write("Enter updated task name: ");
         var newTaskName = Console.ReadLine() ?? string.Empty;
@@ -71,19 +95,19 @@ public class UI
         return (id, newTaskName);
     }
 
-    public static (Guid, string) GetTaskIdToComplete(DataStore dataStore)
+    public static (Guid, string) GetTaskIdToComplete(IEnumerable<TaskEvent> allTasks)
     {
         Console.Write("Enter task id to complete: ");
         var input = Console.ReadLine() ?? string.Empty;
-        var pendingTask = Projections.GetTasksPending(dataStore).First(x => x.RowNumber == int.Parse(input));
+        var pendingTask = TaskList(allTasks).First(x => x.RowNumber == int.Parse(input));
         return (pendingTask.Id, pendingTask.Task);
     }
 
-    public static (Guid, string) GetTaskIdToRemove(DataStore dataStore)
+    public static (Guid, string) GetTaskIdToRemove(IEnumerable<TaskEvent> allTasks)
     {
         Console.Write("Enter task id to remove: ");
         var input = Console.ReadLine() ?? string.Empty;
-        var pendingTask = Projections.GetTasksPending(dataStore).First(x => x.RowNumber == int.Parse(input));
+        var pendingTask = TaskList(allTasks).First(x => x.RowNumber == int.Parse(input));
         return (pendingTask.Id, pendingTask.Task);
     }
 

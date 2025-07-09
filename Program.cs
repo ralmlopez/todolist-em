@@ -10,19 +10,21 @@ static void Run()
     var quit = false;
     var message = string.Empty;
     var dataStore = new DataStore(FileName);
+    var allTasks = dataStore.GetAllEvents().ToList();
 
     while (!quit)
     {
-        UI.ShowTasks(dataStore);
+        UI.ShowTasks(allTasks);
         UI.ShowMessage(message);
         UI.ShowMenu();
         message = string.Empty;
 
-        (quit, message) = ProcessInput(dataStore);
+        (quit, message) = ProcessInput(dataStore, allTasks);
+        allTasks = dataStore.GetAllEvents().ToList();
     }
 }
 
-static (bool, string) ProcessInput(DataStore dataStore)
+static (bool, string) ProcessInput(DataStore dataStore, IEnumerable<TaskEvent> allTasks)
 {
     var quit = false;
     var message = string.Empty;
@@ -43,19 +45,19 @@ static (bool, string) ProcessInput(DataStore dataStore)
             break;
 
         case "2":
-            var updateInfo = UI.GetIdAndNewTaskName(dataStore);
+            var updateInfo = UI.GetIdAndNewTaskName(allTasks);
             var updatedEvent = Commands.UpdateTask(updateInfo.Item1, updateInfo.Item2);
             dataStore.AppendEvent(updatedEvent);
             break;
 
         case "3":
-            var completeInfo = UI.GetTaskIdToComplete(dataStore);
+            var completeInfo = UI.GetTaskIdToComplete(allTasks);
             var completedEvent = Commands.CompleteTask(completeInfo.Item1, completeInfo.Item2);
             dataStore.AppendEvent(completedEvent);
             break;
 
         case "4":
-            var removeInfo = UI.GetTaskIdToComplete(dataStore);
+            var removeInfo = UI.GetTaskIdToComplete(allTasks);
             var removedEvent = Commands.RemoveTask(removeInfo.Item1, removeInfo.Item2);
             dataStore.AppendEvent(removedEvent);
             break;

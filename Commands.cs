@@ -2,7 +2,7 @@ namespace Tasks;
 
 public class Commands
 {
-    public static (TaskEvent?, string?) CreateTask(string task)
+    public static (TaskEvent, string) CreateTask(string task)
     {
         if (string.IsNullOrEmpty(task))
         {
