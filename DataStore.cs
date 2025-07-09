@@ -3,20 +3,17 @@ namespace Tasks;
 public class DataStore
 {
     readonly string fileName;
-    int nextId = 0;
 
     public DataStore(string fileName)
     {
         this.fileName = fileName;
         var events = GetAllEvents().ToList();
-        nextId = events.Count == 0 ? 1 : events.Max(e => e.Id) + 1;
     }
 
-    public void AppendEvent(string task, string eventType)
+    public void AppendEvent(TaskEvent taskEvent)
     {
-        var record = $"{nextId},{task},{eventType},{DateTime.Now}";
+        var record = $"{taskEvent.Id},{taskEvent.Task},{taskEvent.EventType},{taskEvent.Created}";
         File.AppendAllLines(fileName, new[] { record });
-        nextId++;
     }
 
     public void AppendEvent(int id, string task, string eventType)
@@ -25,7 +22,7 @@ public class DataStore
         File.AppendAllLines(fileName, new[] { record });
     }
 
-    public IEnumerable<Event> GetAllEvents()
+    public IEnumerable<TaskEvent> GetAllEvents()
     {
         if (File.Exists(fileName))
         {
@@ -33,13 +30,13 @@ public class DataStore
                 .ReadLines(fileName)
                 .Select(line => line.Split(','))
                 .Select(item =>
-                        new Event(
-                            id: int.Parse(item[0])
+                        new TaskEvent(
+                            id: System.Guid.Parse(item[0])
                             , task: item[1]
                             , eventType: item[2]
                             , created: DateTime.Parse(item[3])));
         }
 
-        return new List<Event>();
+        return new List<TaskEvent>();
     }
 }

@@ -2,32 +2,27 @@ namespace Tasks;
 
 public class Commands
 {
-    public static void CreateTask(DataStore dataStore, string task)
+    public static (TaskEvent?, string?) CreateTask(string task)
     {
-        if (task == null) return;
-        dataStore.AppendEvent(task, EventType.TaskCreated);
+        if (string.IsNullOrEmpty(task))
+        {
+            return (null, "Task cannot be empty");
+        }
+        return (new TaskEvent(Guid.NewGuid(), task, EventType.TaskCreated, DateTime.Now), null);
     }
 
-    public static void UpdateTask(DataStore dataStore, int id, string task)
+    public static TaskEvent UpdateTask(Guid id, string task)
     {
-        if (Projections.GetTaskPending(dataStore, id) == null) return;
-
-        dataStore.AppendEvent(id, task, EventType.TaskUpdated);
+        return new TaskEvent(id, task, EventType.TaskUpdated, DateTime.Now);
     }
 
-    public static void CompleteTask(DataStore dataStore, int id)
+    public static TaskEvent CompleteTask(Guid id, string task)
     {
-        var task = Projections.GetTaskPending(dataStore, id);
-        if (task == null) return;
-
-        dataStore.AppendEvent(id, task, EventType.TaskCompleted);
+        return new TaskEvent(id, task, EventType.TaskCompleted, DateTime.Now);
     }
 
-    public static void RemoveTask(DataStore dataStore, int id)
+    public static TaskEvent RemoveTask(Guid id, string task)
     {
-        var task = Projections.GetTasksNotRemoved(dataStore, id);
-        if (task == null) return;
-
-        dataStore.AppendEvent(id, task, EventType.TaskRemoved);
+        return new TaskEvent(id, task, EventType.TaskRemoved, DateTime.Now);
     }
 }

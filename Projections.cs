@@ -1,12 +1,28 @@
 namespace Tasks;
 
+public class PendingTask
+{
+    public int RowNumber { get; set; }
+    public Guid Id { get; set; }
+    public string Task { get; set; }
+}
+
+
+public class CompletedTask
+{
+    public Guid Id { get; set; }
+    public string Task { get; set; }
+}
+
 public class Projections
 {
-    public static IEnumerable<string> GetTasksPending(DataStore dataStore)
+
+
+    public static IEnumerable<PendingTask> GetTasksPending(DataStore dataStore)
     {
         var allTasks = dataStore.GetAllEvents().ToList();
 
-        var exclusions = new HashSet<int>(allTasks.Where(x => x.EventType == EventType.TaskCompleted
+        var exclusions = new HashSet<Guid>(allTasks.Where(x => x.EventType == EventType.TaskCompleted
                     || x.EventType == EventType.TaskRemoved).Select(x => x.Id));
 
         return allTasks
@@ -14,14 +30,14 @@ public class Projections
                     && !exclusions.Contains(x.Id))
             .GroupBy(x => x.Id)
             .Select(g => g.OrderBy(c => c.Id).ThenByDescending(c => c.Created).First())
-            .Select(x => $"{x.Id}:{x.Task}");
+            .Select((x, index) => new PendingTask { RowNumber= index + 1, Id = x.Id, Task = x.Task});
     }
 
-    public static string? GetTaskPending(DataStore dataStore, int id)
+    public static string GetTaskPending(DataStore dataStore, Guid id)
     {
         var allTasks = dataStore.GetAllEvents().ToList();
 
-        var exclusions = new HashSet<int>(allTasks.Where(x => x.EventType == EventType.TaskCompleted
+        var exclusions = new HashSet<Guid>(allTasks.Where(x => x.EventType == EventType.TaskCompleted
                     || x.EventType == EventType.TaskRemoved).Select(x => x.Id));
 
         return allTasks
@@ -34,7 +50,7 @@ public class Projections
             .FirstOrDefault();
     }
 
-    public static string? GetTasksNotRemoved(DataStore dataStore, int id)
+    public static string GetTasksNotRemoved(DataStore dataStore, Guid id)
     {
         var allTasks = dataStore.GetAllEvents().ToList();
 
@@ -47,15 +63,15 @@ public class Projections
             .FirstOrDefault();
     }
 
-    public static IEnumerable<string> GetTasksCompleted(DataStore dataStore)
+    public static IEnumerable<CompletedTask> GetTasksCompleted(DataStore dataStore)
     {
         var allTasks = dataStore.GetAllEvents().ToList();
-        var exclude = new HashSet<int>(allTasks.Where(x => x.EventType == EventType.TaskRemoved).Select(x => x.Id));
+        var exclude = new HashSet<Guid>(allTasks.Where(x => x.EventType == EventType.TaskRemoved).Select(x => x.Id));
 
         return dataStore
             .GetAllEvents()
             .Where(task => task.EventType == EventType.TaskCompleted
                     && !exclude.Contains(task.Id))
-            .Select(x => $"{x.Id}:{x.Task}");
+            .Select(x => new CompletedTask { Id = x.Id, Task = x.Task});
     }
 }

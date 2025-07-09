@@ -1,13 +1,13 @@
 namespace Tasks;
 
-public class Event
+public class TaskEvent
 {
-    public int Id { get; private set; }
+    public Guid Id { get; private set; }
     public string Task { get; private set; }
     public string EventType { get; private set; }
     public DateTime Created { get; private set; }
 
-    public Event(int id, string task, string eventType, DateTime created)
+    public TaskEvent(Guid id, string task, string eventType, DateTime created)
     {
         Id = id;
         Task = task;

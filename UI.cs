@@ -13,10 +13,21 @@ public class UI
         Console.Write("Enter choice: ");
     }
 
+    public static void ShowMessage(string message)
+    {
+        if (string.IsNullOrEmpty(message)) return;
+
+        ConsoleColor originalBackground = Console.BackgroundColor;
+        Console.BackgroundColor = ConsoleColor.Red;
+        Console.WriteLine(message);
+        Console.BackgroundColor = originalBackground;
+        Console.WriteLine();
+    }
+
     public static void ShowTasks(DataStore dataStore)
     {
         const int spaces = 10;
-        const int listWidth = 20;
+        const int listWidth = 60;
         var blankSpaces = new string(' ', spaces);
         var listHorizontalBorder = new string('-', listWidth);
         var headerFormat = $" {{0, -{listWidth}}}{blankSpaces}  {{1, -{listWidth}}}";
@@ -25,8 +36,10 @@ public class UI
         Console.WriteLine(string.Format(headerFormat, "TASKS", "DONE"));
         Console.WriteLine($" {listHorizontalBorder}{blankSpaces}  {listHorizontalBorder}");
 
-        var todo = Projections.GetTasksPending(dataStore).ToList();
-        var completed = Projections.GetTasksCompleted(dataStore).ToList();
+        var todo = Projections.GetTasksPending(dataStore)
+            .Select(x => $"{x.RowNumber} | {x.Id} | {x.Task}").ToList();
+        var completed = Projections.GetTasksCompleted(dataStore)
+            .Select(x => $"{x.Id} | {x.Task}").ToList();
 
         int maxCount = Math.Max(todo.Count, completed.Count);
         for (int i = 0; i < maxCount; i++)
@@ -46,11 +59,11 @@ public class UI
         return Console.ReadLine() ?? string.Empty;
     }
 
-    public static (int, string) GetIdAndNewTaskName()
+    public static (Guid, string) GetIdAndNewTaskName(DataStore dataStore)
     {
         Console.Write("Enter task id to update: ");
         var input = Console.ReadLine() ?? string.Empty;
-        var id = int.Parse(input == string.Empty ? "0" : input);
+        var id = Projections.GetTasksPending(dataStore).First(x => x.RowNumber == int.Parse(input)).Id;
 
         Console.Write("Enter updated task name: ");
         var newTaskName = Console.ReadLine() ?? string.Empty;
@@ -58,23 +71,25 @@ public class UI
         return (id, newTaskName);
     }
 
-    public static int GetTaskIdToComplete()
+    public static (Guid, string) GetTaskIdToComplete(DataStore dataStore)
     {
         Console.Write("Enter task id to complete: ");
         var input = Console.ReadLine() ?? string.Empty;
-        return int.Parse(input == string.Empty ? "0" : input);
+        var pendingTask = Projections.GetTasksPending(dataStore).First(x => x.RowNumber == int.Parse(input));
+        return (pendingTask.Id, pendingTask.Task);
     }
 
-    public static int GetTaskIdToRemove()
+    public static (Guid, string) GetTaskIdToRemove(DataStore dataStore)
     {
         Console.Write("Enter task id to remove: ");
         var input = Console.ReadLine() ?? string.Empty;
-        return int.Parse(input == string.Empty ? "0" : input);
+        var pendingTask = Projections.GetTasksPending(dataStore).First(x => x.RowNumber == int.Parse(input));
+        return (pendingTask.Id, pendingTask.Task);
     }
 
     static string FormatForDisplay(string task)
     {
-        const int maxLength = 20;
+        const int maxLength = 60;
         return task.Length > maxLength ? task.Substring(0, maxLength) : task.PadRight(maxLength);
     }
 
