@@ -7,18 +7,11 @@ public class DataStore
     public DataStore(string fileName)
     {
         this.fileName = fileName;
-        var events = GetAllEvents().ToList();
     }
 
     public void AppendEvent(TaskEvent taskEvent)
     {
         var record = $"{taskEvent.Id},{taskEvent.Task},{taskEvent.EventType},{taskEvent.Created}";
-        File.AppendAllLines(fileName, new[] { record });
-    }
-
-    public void AppendEvent(int id, string task, string eventType)
-    {
-        var record = $"{id},{task},{eventType},{DateTime.Now}";
         File.AppendAllLines(fileName, new[] { record });
     }
 
