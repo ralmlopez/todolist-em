@@ -53,8 +53,7 @@ public class UI
         Console.WriteLine();
     }
 
-
-    public static IEnumerable<PendingTask> TaskList(IEnumerable<TaskEvent> allTasks)
+    private static IEnumerable<PendingTask> TaskList(IEnumerable<TaskEvent> allTasks)
     {
         var exclusions = new HashSet<Guid>(allTasks.Where(x => x.EventType == EventType.TaskCompleted
                     || x.EventType == EventType.TaskRemoved).Select(x => x.Id));
@@ -67,7 +66,7 @@ public class UI
             .Select((x, index) => new PendingTask { RowNumber= index + 1, Id = x.Id, Task = x.Task});
     }
 
-    public static IEnumerable<CompletedTask> TaskCompletedList(IEnumerable<TaskEvent> allTasks)
+    private static IEnumerable<CompletedTask> TaskCompletedList(IEnumerable<TaskEvent> allTasks)
     {
         var exclude = new HashSet<Guid>(allTasks.Where(x => x.EventType == EventType.TaskRemoved).Select(x => x.Id));
 
@@ -111,7 +110,7 @@ public class UI
         return (pendingTask.Id, pendingTask.Task);
     }
 
-    static string FormatForDisplay(string task)
+    private static string FormatForDisplay(string task)
     {
         const int maxLength = 60;
         return task.Length > maxLength ? task.Substring(0, maxLength) : task.PadRight(maxLength);
