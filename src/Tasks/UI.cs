@@ -2,6 +2,19 @@ namespace Tasks;
 
 public class UI
 {
+    private class PendingTask
+    {
+        public int RowNumber { get; set; }
+        public Guid Id { get; set; }
+        public string Task { get; set; }
+    }
+
+    private class CompletedTask
+    {
+        public Guid Id { get; set; }
+        public string Task { get; set; }
+    }
+
     public static void ShowMenu()
     {
         Console.WriteLine("1. Create Task");
